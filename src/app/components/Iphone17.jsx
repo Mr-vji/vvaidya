@@ -7,12 +7,12 @@ import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
 
 export function Iphone17(props) {
-  const { nodes, materials } = useGLTF("./models/IPHONE17.glb");
-  const video = useVideoTexture("./textures/screen.mp4");
+  const { nodes, materials } = useGLTF("/models/IPHONE17.glb");
+  const video = useVideoTexture("/textures/screen.mp4");
 
   // Fix the flipped orientation
-video.flipY = false;
-video.colorSpace = THREE.SRGBColorSpace;
+  video.flipY = false;
+  video.colorSpace = THREE.SRGBColorSpace;
 
   const texturedMaterial = new THREE.MeshStandardMaterial({
     map: video,
@@ -341,4 +341,4 @@ video.colorSpace = THREE.SRGBColorSpace;
   );
 }
 
-useGLTF.preload("./models/IPHONE17.glb");
+useGLTF.preload("/models/IPHONE17.glb");
