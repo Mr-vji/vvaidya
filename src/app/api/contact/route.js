@@ -8,7 +8,7 @@ export async function POST(req) {
 
     await resend.emails.send({
       from: "VAIDYA 247 <onboarding@resend.dev>", // ✅ must be verified
-      to: ["djohnjonathanmoses1@gmail.com"], // your inbox
+      to: ["mrvijaykumar.in@gmail.com"], // your inbox
       replyTo: email, // ✅ USER EMAIL HERE
       subject: `New VAIDYA 247 Submission`,
       text: `
