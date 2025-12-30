@@ -44,7 +44,7 @@ export default function MainHero() {
   "
               >
                 <img
-                  src="/Im/google-play-store-seeklogo.png"
+                  src="im/google-play-store-seeklogo.png"
                   alt="Google Play"
                   className="w-full h-12 object-contain"
                 />
@@ -60,7 +60,7 @@ export default function MainHero() {
   "
               >
                 <img
-                  src="/Im/apple store.png"
+                  src="im/apple store.png"
                   alt="App Store"
                   className="w-full h-12 object-contain"
                 />
