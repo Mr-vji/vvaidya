@@ -1,29 +1,47 @@
 "use client";
+
 import React, { useState, useRef } from "react";
 import {
   ChevronLeft,
   Calendar,
   MapPin,
   Upload,
-  Link as LinkIcon,
   CheckCircle,
   AlertCircle,
   Building,
   Globe,
   Mail,
-  Image as ImageIcon,
 } from "lucide-react";
 
 export default function AdvertiserForm() {
   const [targetAudience, setTargetAudience] = useState(["doctors"]);
-  const [activeStep, setActiveStep] = useState(1);
   const [squareImage, setSquareImage] = useState(null);
   const [landscapeImage, setLandscapeImage] = useState(null);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [industry, setIndustry] = useState("");
+  const [companyLegalName, setCompanyLegalName] = useState("");
+  const [brandName, setBrandName] = useState("");
+  const [website, setWebsite] = useState("");
+  const [officialEmail, setOfficialEmail] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [geography, setGeography] = useState("");
+  const [headline, setHeadline] = useState("");
+  const [description, setDescription] = useState("");
 
   const [agreedEvidence, setAgreedEvidence] = useState(false);
   const [agreedPolicy, setAgreedPolicy] = useState(false);
 
-  // Refs for file inputs
+  const [notification, setNotification] = useState({
+    show: false,
+    type: "",
+    message: "",
+  });
+
+  const [errorFields, setErrorFields] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  const notificationRef = useRef(null);
   const squareInputRef = useRef(null);
   const landscapeInputRef = useRef(null);
 
@@ -39,74 +57,241 @@ export default function AdvertiserForm() {
     const file = e.target.files[0];
     if (!file) return;
 
-    file.preview = URL.createObjectURL(file); // ✅ create preview
+    file.preview = URL.createObjectURL(file);
     setImage(file);
   };
 
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(null);
+  const showNotification = (type, message) => {
+    setNotification({
+      show: true,
+      type,
+      message,
+    });
+
+    if (notificationRef.current) {
+      const notif = notificationRef.current;
+
+      notif.style.opacity = "0";
+      notif.style.transform = "scale(0.8) translateY(-30px)";
+
+      setTimeout(() => {
+        notif.style.transition = "all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)";
+        notif.style.opacity = "1";
+        notif.style.transform = "scale(1) translateY(0)";
+      }, 10);
+
+      setTimeout(() => {
+        notif.style.transition = "all 0.4s ease-out";
+        notif.style.opacity = "0";
+        notif.style.transform = "scale(0.8) translateY(-30px)";
+
+        setTimeout(() => {
+          setNotification({
+            show: false,
+            type: "",
+            message: "",
+          });
+        }, 400);
+      }, 4000);
+    }
+  };
+
+  const getTodayDate = () => {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (loading) return;
-    if (!agreedEvidence || !agreedPolicy) return;
 
+    const newErrorFields = {};
+    let hasErrors = false;
+
+    if (!companyLegalName.trim()) {
+      newErrorFields.companyLegalName = true;
+      hasErrors = true;
+    }
+
+    if (!brandName.trim()) {
+      newErrorFields.brandName = true;
+      hasErrors = true;
+    }
+
+    if (!industry) {
+      newErrorFields.industry = true;
+      hasErrors = true;
+    }
+
+    if (!website.trim()) {
+      newErrorFields.website = true;
+      hasErrors = true;
+    }
+
+    if (!officialEmail.trim()) {
+      newErrorFields.officialEmail = true;
+      hasErrors = true;
+    }
+
+    if (!mobile.trim()) {
+      newErrorFields.mobile = true;
+      hasErrors = true;
+    }
+
+    if (!geography) {
+      newErrorFields.geography = true;
+      hasErrors = true;
+    }
+
+    if (!startDate) {
+      newErrorFields.startDate = true;
+      hasErrors = true;
+    }
+
+    if (!endDate) {
+      newErrorFields.endDate = true;
+      hasErrors = true;
+    }
+
+    if (!headline.trim()) {
+      newErrorFields.headline = true;
+      hasErrors = true;
+    }
+
+    if (!description.trim()) {
+      newErrorFields.description = true;
+      hasErrors = true;
+    }
+
+    if (!squareImage) {
+      newErrorFields.squareImage = true;
+      hasErrors = true;
+    }
+
+    if (!agreedEvidence) {
+      newErrorFields.agreedEvidence = true;
+      hasErrors = true;
+    }
+
+    if (!agreedPolicy) {
+      newErrorFields.agreedPolicy = true;
+      hasErrors = true;
+    }
+
+    if (hasErrors) {
+      setErrorFields(newErrorFields);
+      showNotification("error", "Please fill all required fields");
+      return;
+    }
+
+    setErrorFields({});
     setLoading(true);
-
-    const form = e.target;
 
     const formData = new FormData();
 
-    formData.append("companyLegalName", form.companyLegalName.value);
-    formData.append("brandName", form.brandName.value);
-    formData.append("industry", form.industry.value);
-    formData.append("website", form.website.value);
-    formData.append("officialEmail", form.officialEmail.value);
-    formData.append("mobile", form.mobile.value);
+    formData.append("companyLegalName", companyLegalName);
+    formData.append("brandName", brandName);
+    formData.append("industry", industry);
+    formData.append("website", website);
+    formData.append("officialEmail", officialEmail);
+    formData.append("mobile", mobile);
 
     formData.append("targetAudience", JSON.stringify(targetAudience));
-    formData.append("geography", form.geography.value);
-    formData.append("startDate", form.startDate.value);
-    formData.append("endDate", form.endDate.value);
+    formData.append("geography", geography);
+    formData.append("startDate", startDate);
+    formData.append("endDate", endDate);
 
-    formData.append("headline", form.headline.value);
-    formData.append("description", form.description.value);
+    formData.append("headline", headline);
+    formData.append("description", description);
 
     if (squareImage) formData.append("squareImage", squareImage);
     if (landscapeImage) formData.append("landscapeImage", landscapeImage);
 
     try {
-      const form = e.target;
-      const formData = new FormData(form);
-
-      if (squareImage) formData.append("squareImage", squareImage);
-      if (landscapeImage) formData.append("landscapeImage", landscapeImage);
-
       const res = await fetch("/api/advertiser", {
         method: "POST",
         body: formData,
       });
 
       if (res.ok) {
-        form.reset();
+        showNotification("success", "Campaign submitted successfully! 🎉");
+
+        setCompanyLegalName("");
+        setBrandName("");
+        setIndustry("");
+        setWebsite("");
+        setOfficialEmail("");
+        setMobile("");
+        setGeography("");
+        setHeadline("");
+        setDescription("");
+        setTargetAudience(["doctors"]);
+        setSquareImage(null);
+        setLandscapeImage(null);
+        setStartDate("");
+        setEndDate("");
         setAgreedEvidence(false);
         setAgreedPolicy(false);
+        setErrorFields({});
+      } else {
+        showNotification(
+          "error",
+          "Failed to submit campaign. Please try again."
+        );
       }
     } catch (err) {
       console.error(err);
+      showNotification("error", "An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+  const getNotificationIcon = () => {
+    switch (notification.type) {
+      case "success":
+        return <CheckCircle className="w-6 h-6 flex-shrink-0" />;
+      case "error":
+        return <AlertCircle className="w-6 h-6 flex-shrink-0" />;
+      default:
+        return null;
+    }
+  };
+
+  const getInputBorderClass = (fieldName) => {
+    if (errorFields[fieldName]) {
+      return "border-red-500 focus:border-red-500 focus:ring-red-500/20 bg-red-50";
+    }
+    return "border-slate-200 focus:border-[#27187e] focus:ring-[#27187e]/20";
+  };
+
   return (
     <div className="min-h-screen bg-white font-sans text-slate-800">
+      {/* Notification */}
+      {notification.show && (
+        <div
+          ref={notificationRef}
+          className={`fixed top-6 left-1/2 -translate-x-1/2 z-50 px-6 py-4 rounded-2xl backdrop-blur-2xl border font-medium flex items-center gap-3 max-w-md w-11/12 shadow-2xl
+          ${
+            notification.type === "success"
+              ? "bg-green-500/25 border-green-400/60 text-green-700"
+              : "bg-red-500/25 border-red-400/60 text-red-700"
+          }`}
+          style={{
+            opacity: 0,
+            transform: "scale(0.8) translateY(-30px)",
+          }}
+        >
+          {getNotificationIcon()}
+          <span className="text-sm sm:text-base font-semibold">
+            {notification.message}
+          </span>
+        </div>
+      )}
+
       {/* Main Content */}
-      <form
-        onSubmit={handleSubmit}
-        className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12"
-      >
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {/* Header */}
         <div className="mb-10 text-center sm:text-left">
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">
@@ -132,14 +317,17 @@ export default function AdvertiserForm() {
             <div className="grid md:grid-cols-2 gap-x-8 gap-y-6">
               <div>
                 <label className="text-sm font-semibold text-slate-800 block mb-2">
-                  Company legal name
+                  Company legal name <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <input
-                    name="companyLegalName"
                     type="text"
+                    value={companyLegalName}
+                    onChange={(e) => setCompanyLegalName(e.target.value)}
                     placeholder="e.g. Acme Healthcare Pvt Ltd"
-                    className="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-200 focus:border-[#27187e] focus:ring-2 focus:ring-[#27187e]/20 outline-none text-sm transition-all"
+                    className={`w-full pl-10 pr-4 py-3 rounded-lg border focus:ring-2 outline-none text-sm transition-all ${getInputBorderClass(
+                      "companyLegalName"
+                    )}`}
                   />
                   <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 </div>
@@ -147,28 +335,46 @@ export default function AdvertiserForm() {
 
               <div>
                 <label className="text-sm font-semibold text-slate-800 block mb-2">
-                  Brand name
+                  Brand name <span className="text-red-500">*</span>
                 </label>
                 <input
-                  name="brandName"
                   type="text"
+                  value={brandName}
+                  onChange={(e) => setBrandName(e.target.value)}
                   placeholder="e.g. Acme Critical Care"
-                  className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-[#27187e] focus:ring-2 focus:ring-[#27187e]/20 outline-none text-sm transition-all"
+                  className={`w-full px-4 py-3 rounded-lg border focus:ring-2 outline-none text-sm transition-all ${getInputBorderClass(
+                    "brandName"
+                  )}`}
                 />
               </div>
 
               <div>
                 <label className="text-sm font-semibold text-slate-800 block mb-2">
-                  Industry category
+                  Industry category <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <select
-                    name="industry"
-                    className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-[#27187e] focus:ring-2 focus:ring-[#27187e]/20 outline-none text-sm appearance-none bg-white text-slate-600 transition-all"
+                    value={industry}
+                    onChange={(e) => setIndustry(e.target.value)}
+                    className={`w-full px-4 py-3 rounded-lg border focus:ring-2 outline-none text-sm appearance-none bg-white transition-all ${getInputBorderClass(
+                      "industry"
+                    )}`}
+                    style={{
+                      color: industry ? "#1e293b" : "#64748b",
+                    }}
                   >
-                    <option>Select category</option>
-                    <option>Pharmaceuticals</option>
-                    <option>Medical Equipment</option>
+                    <option value="" className="text-slate-600">
+                      Select category
+                    </option>
+                    <option value="Pharmaceuticals" className="text-slate-900">
+                      Pharmaceuticals
+                    </option>
+                    <option
+                      value="Medical Equipment"
+                      className="text-slate-900"
+                    >
+                      Medical Equipment
+                    </option>
                   </select>
                   <ChevronLeft className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 -rotate-90 pointer-events-none" />
                 </div>
@@ -176,14 +382,17 @@ export default function AdvertiserForm() {
 
               <div>
                 <label className="text-sm font-semibold text-slate-800 block mb-2">
-                  Website URL
+                  Website URL <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <input
-                    name="website"
                     type="text"
+                    value={website}
+                    onChange={(e) => setWebsite(e.target.value)}
                     placeholder="e.g. https://www.acme.com"
-                    className="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-200 focus:border-[#27187e] focus:ring-2 focus:ring-[#27187e]/20 outline-none text-sm transition-all"
+                    className={`w-full pl-10 pr-4 py-3 rounded-lg border focus:ring-2 outline-none text-sm transition-all ${getInputBorderClass(
+                      "website"
+                    )}`}
                   />
                   <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 </div>
@@ -191,14 +400,17 @@ export default function AdvertiserForm() {
 
               <div>
                 <label className="text-sm font-semibold text-slate-800 block mb-2">
-                  Official email ID
+                  Official email ID <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <input
-                    name="officialEmail"
                     type="email"
+                    value={officialEmail}
+                    onChange={(e) => setOfficialEmail(e.target.value)}
                     placeholder="marketing@acme.com"
-                    className="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-200 focus:border-[#27187e] focus:ring-2 focus:ring-[#27187e]/20 outline-none text-sm transition-all"
+                    className={`w-full pl-10 pr-4 py-3 rounded-lg border focus:ring-2 outline-none text-sm transition-all ${getInputBorderClass(
+                      "officialEmail"
+                    )}`}
                   />
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 </div>
@@ -206,14 +418,17 @@ export default function AdvertiserForm() {
 
               <div>
                 <label className="text-sm font-semibold text-slate-800 block mb-2">
-                  Mobile number
+                  Mobile number <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <input
-                    name="mobile"
                     type="tel"
+                    value={mobile}
+                    onChange={(e) => setMobile(e.target.value)}
                     placeholder="98765 43210"
-                    className="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-200 focus:border-[#27187e] focus:ring-2 focus:ring-[#27187e]/20 outline-none text-sm transition-all"
+                    className={`w-full pl-10 pr-4 py-3 rounded-lg border focus:ring-2 outline-none text-sm transition-all ${getInputBorderClass(
+                      "mobile"
+                    )}`}
                   />
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-400">
                     +91
@@ -237,13 +452,14 @@ export default function AdvertiserForm() {
             <div className="space-y-6">
               <div>
                 <label className="text-sm font-semibold text-slate-800 block mb-3">
-                  Target audience
+                  Target audience <span className="text-red-500">*</span>
                 </label>
                 <div className="flex flex-wrap gap-3">
                   {["Doctors", "Hospitals", "Clinics / Diagnostic centers"].map(
                     (audience) => (
                       <button
                         key={audience}
+                        type="button"
                         onClick={() =>
                           handleAudienceToggle(audience.toLowerCase())
                         }
@@ -266,12 +482,15 @@ export default function AdvertiserForm() {
 
               <div>
                 <label className="text-sm font-semibold text-slate-800 block mb-2">
-                  Target geography
+                  Target geography <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <select
-                    name="geography"
-                    className="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-200 focus:border-[#27187e] focus:ring-2 focus:ring-[#27187e]/20 outline-none text-sm appearance-none bg-white text-slate-600 transition-all"
+                    value={geography}
+                    onChange={(e) => setGeography(e.target.value)}
+                    className={`w-full pl-10 pr-4 py-3 rounded-lg border focus:ring-2 outline-none text-sm appearance-none bg-white text-slate-600 transition-all ${getInputBorderClass(
+                      "geography"
+                    )}`}
                   >
                     <option value="">Select State</option>
                     <option value="AP">Andhra Pradesh (AP)</option>
@@ -285,26 +504,34 @@ export default function AdvertiserForm() {
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="text-sm font-semibold text-slate-800 block mb-2">
-                    Start Date
+                    Start Date <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <input
-                      name="startDate"
                       type="date"
-                      className="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-200 focus:border-[#27187e] focus:ring-2 focus:ring-[#27187e]/20 outline-none text-sm text-slate-600 transition-all"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      min={getTodayDate()}
+                      className={`w-full pl-10 pr-4 py-3 rounded-lg border focus:ring-2 outline-none text-sm transition-all ${getInputBorderClass(
+                        "startDate"
+                      )}`}
                     />
                     <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                   </div>
                 </div>
                 <div>
                   <label className="text-sm font-semibold text-slate-800 block mb-2">
-                    End Date
+                    End Date <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <input
-                      name="endDate"
                       type="date"
-                      className="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-200 focus:border-[#27187e] focus:ring-2 focus:ring-[#27187e]/20 outline-none text-sm text-slate-600 transition-all"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      min={startDate || getTodayDate()}
+                      className={`w-full pl-10 pr-4 py-3 rounded-lg border focus:ring-2 outline-none text-sm transition-all ${getInputBorderClass(
+                        "endDate"
+                      )}`}
                     />
                     <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                   </div>
@@ -327,30 +554,35 @@ export default function AdvertiserForm() {
             <div className="space-y-6">
               <div>
                 <label className="text-sm font-semibold text-slate-800 block mb-2">
-                  Headline
+                  Headline <span className="text-red-500">*</span>
                 </label>
                 <input
-                  name="headline"
                   type="text"
+                  value={headline}
+                  onChange={(e) => setHeadline(e.target.value)}
                   placeholder="e.g. ICU monitor solutions trusted by 120+ tier-2 hospitals"
-                  className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-[#27187e] focus:ring-2 focus:ring-[#27187e]/20 outline-none text-sm transition-all"
+                  className={`w-full px-4 py-3 rounded-lg border focus:ring-2 outline-none text-sm transition-all ${getInputBorderClass(
+                    "headline"
+                  )}`}
                 />
               </div>
 
               <div>
                 <label className="text-sm font-semibold text-slate-800 block mb-2">
-                  Short description
+                  Short description <span className="text-red-500">*</span>
                 </label>
                 <textarea
-                  name="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                   rows="2"
                   placeholder="Explain the value in simple, factual language."
-                  className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-[#27187e] focus:ring-2 focus:ring-[#27187e]/20 outline-none text-sm resize-none transition-all"
+                  className={`w-full px-4 py-3 rounded-lg border focus:ring-2 outline-none text-sm resize-none transition-all ${getInputBorderClass(
+                    "description"
+                  )}`}
                 ></textarea>
               </div>
 
               <div className="grid md:grid-cols-2 gap-6 pt-4">
-                {/* Hidden File Inputs */}
                 <input
                   type="file"
                   ref={squareInputRef}
@@ -366,12 +598,13 @@ export default function AdvertiserForm() {
                   onChange={(e) => handleFileChange(e, setLandscapeImage)}
                 />
 
-                {/* Square Upload Box */}
                 <div
-                  onClick={() => squareInputRef.current.click()}
+                  onClick={() => squareInputRef.current?.click()}
                   className={`border border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-all group relative overflow-hidden h-48
                     ${
-                      squareImage
+                      errorFields.squareImage
+                        ? "border-red-500 bg-red-50"
+                        : squareImage
                         ? "border-green-300 bg-green-50"
                         : "border-slate-300 hover:bg-slate-50"
                     }`}
@@ -399,7 +632,8 @@ export default function AdvertiserForm() {
                         <Upload className="w-5 h-5 text-[#27187e]" />
                       </div>
                       <h4 className="text-sm font-semibold text-slate-900 mb-1">
-                        Upload square image
+                        Upload square image{" "}
+                        <span className="text-red-500">*</span>
                       </h4>
                       <p className="text-xs text-slate-500">
                         1080 × 1080 px • PNG/JPG
@@ -408,9 +642,8 @@ export default function AdvertiserForm() {
                   )}
                 </div>
 
-                {/* Landscape Upload Box */}
                 <div
-                  onClick={() => landscapeInputRef.current.click()}
+                  onClick={() => landscapeInputRef.current?.click()}
                   className={`border border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-all group relative overflow-hidden h-48
                     ${
                       landscapeImage
@@ -438,7 +671,19 @@ export default function AdvertiserForm() {
                   ) : (
                     <>
                       <div className="w-10 h-10 rounded-full bg-[#27187e]/10 flex items-center justify-center mb-3 group-hover:bg-[#27187e]/20 transition-colors">
-                        <ImageIcon className="w-5 h-5 text-[#27187e]" />
+                        <svg
+                          className="w-5 h-5 text-[#27187e]"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
+                        </svg>
                       </div>
                       <h4 className="text-sm font-semibold text-slate-900 mb-1">
                         Upload landscape image
@@ -473,28 +718,53 @@ export default function AdvertiserForm() {
             </div>
 
             <div className="space-y-4">
-              <label className="flex gap-3 cursor-pointer group items-start">
+              <label
+                className={`flex gap-3 cursor-pointer group items-start p-3 rounded-lg transition-all ${
+                  errorFields.agreedEvidence
+                    ? "bg-red-50 border border-red-200"
+                    : ""
+                }`}
+              >
                 <input
                   type="checkbox"
                   checked={agreedEvidence}
                   onChange={(e) => setAgreedEvidence(e.target.checked)}
                   className="w-4 h-4 mt-1 rounded border-slate-300 text-[#27187e] focus:ring-[#27187e]"
                 />
-                <span className="text-xs text-slate-600 group-hover:text-slate-900 leading-relaxed">
+                <span
+                  className={`text-xs leading-relaxed ${
+                    errorFields.agreedEvidence
+                      ? "text-red-700 font-semibold"
+                      : "text-slate-600 group-hover:text-slate-900"
+                  }`}
+                >
                   I confirm all medical claims in this campaign are backed by
-                  valid evidence.
+                  valid evidence. <span className="text-red-500">*</span>
                 </span>
               </label>
 
-              <label className="flex gap-3 cursor-pointer group items-start">
+              <label
+                className={`flex gap-3 cursor-pointer group items-start p-3 rounded-lg transition-all ${
+                  errorFields.agreedPolicy
+                    ? "bg-red-50 border border-red-200"
+                    : ""
+                }`}
+              >
                 <input
                   type="checkbox"
                   checked={agreedPolicy}
                   onChange={(e) => setAgreedPolicy(e.target.checked)}
                   className="w-4 h-4 mt-1 rounded border-slate-300 text-[#27187e] focus:ring-[#27187e]"
                 />
-                <span className="text-xs text-slate-600 group-hover:text-slate-900 leading-relaxed">
-                  I agree to the VAIDYA 247 ad policy and Terms & Conditions.
+                <span
+                  className={`text-xs leading-relaxed ${
+                    errorFields.agreedPolicy
+                      ? "text-red-700 font-semibold"
+                      : "text-slate-600 group-hover:text-slate-900"
+                  }`}
+                >
+                  I agree to the VAIDYA 247 ad policy and Terms & Conditions.{" "}
+                  <span className="text-red-500">*</span>
                 </span>
               </label>
             </div>
@@ -503,13 +773,13 @@ export default function AdvertiserForm() {
           {/* Submit Button */}
           <div className="pt-2">
             <button
-              type="submit"
-              disabled={!agreedEvidence || !agreedPolicy || loading}
+              onClick={handleSubmit}
+              disabled={loading || !agreedEvidence || !agreedPolicy}
               className={`w-full font-bold text-base py-4 rounded-xl transition-all flex items-center justify-center gap-2
     ${
-      !agreedEvidence || !agreedPolicy || loading
+      loading || !agreedEvidence || !agreedPolicy
         ? "bg-slate-300 text-slate-500 cursor-not-allowed"
-        : "bg-[#ff8600] text-white hover:bg-[#27187e]/90 shadow-xl shadow-[#27187e]/20"
+        : "bg-[#ff8600] text-white hover:bg-[#27187e]/90 shadow-xl shadow-[#27187e]/20 active:scale-95"
     }
   `}
             >
@@ -534,7 +804,7 @@ export default function AdvertiserForm() {
                       d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
                     />
                   </svg>
-                  Submitting...
+                  <span>Submitting...</span>
                 </>
               ) : (
                 <>
@@ -544,7 +814,7 @@ export default function AdvertiserForm() {
             </button>
           </div>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

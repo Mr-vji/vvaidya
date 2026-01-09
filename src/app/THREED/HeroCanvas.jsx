@@ -35,7 +35,6 @@ export default function HeroCanvas() {
           enablePan={false}
           enableZoom={false}
           // --- LIMIT ROTATION ---
-
           // Prevent rotating behind the phone (left/right)
           minAzimuthAngle={-Math.PI / 6} // -30°
           maxAzimuthAngle={Math.PI / 6} // +30°

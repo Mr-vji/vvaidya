@@ -42,9 +42,8 @@ export async function POST(req) {
     }
 
     await resend.emails.send({
-      from: "Advertiser Form <onboarding@resend.dev>",
-      to: ["djohnjonathanmoses1@gmail.com"],
-      replyTo: officialEmail,
+      from: "Vaidya247 Updates <notifications@updates.vaidya247.com>",
+      to: ["djohnjonathanmoses1@gmail.com", "mrvijaykumar.in@gmail.com"],
       subject: "New Advertiser Campaign Submission",
       text: `
 COMPANY DETAILS
