@@ -3,14 +3,18 @@ import ContactPage from "../Contact/page";
 import MainHero from "../Design/MainHero";
 import SecondSection from "./SecondSection";
 import PlaneSelectionn from "@/components/SECTIONS/PlaneSelectionn";
+import Home from "../Design/Home";
+import WhatVaidyaDoes from "./WhatVaidyaDoes";
 
 function Main() {
   return (
     <>
-      <MainHero />
-      <SecondSection />
+      <Home />
+      <WhatVaidyaDoes />
+      {/* <MainHero /> */}
+      {/* <SecondSection /> */}
       {/* <PlaneSelection /> */}
-      <PlaneSelectionn />
+      {/* <PlaneSe+-*lectionn /> */}
       {/* <ContactPage /> */}
     </>
   );

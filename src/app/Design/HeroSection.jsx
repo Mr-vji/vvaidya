@@ -74,7 +74,7 @@ export default function HeroSection() {
           <div className="flex flex-wrap justify-center gap-4">
             <button className="flex items-center gap-3 text-white px-6 py-3 rounded-xl  transition-colors ">
               <img
-                src="/IM/AppStore и GooglePlay.svg"
+                src="/im/AppStore и GooglePlay.svg"
                 alt="Google Play Icon"
                 className="object-contain"
               />
