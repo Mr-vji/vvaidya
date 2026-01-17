@@ -8,7 +8,7 @@ import {
   OrbitControls,
 } from "@react-three/drei";
 import { useEffect, useState } from "react";
-import { Iphone17 } from "../components/Iphone17";
+import { Iphone17 } from "./Iphone17";
 
 export default function HeroCanvas() {
   const [isMobile, setIsMobile] = useState(false);

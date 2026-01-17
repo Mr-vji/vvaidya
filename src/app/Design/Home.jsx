@@ -43,10 +43,10 @@ export default function Home() {
             <div className="flex flex-row items-center gap-4 w-full mb-8">
               <button
                 onClick={() => window.open("https://yesca.in/", "_blank")}
-                className="bg-black rounded-xl shadow-xl p-1 w-44 hover:scale-105 active:scale-95 active:shadow-lg transition-transform transition-shadow duration-300 ease-out"
+                className="bg-[#1c1a15] rounded-xl shadow-xl p-1 w-44 hover:scale-105 active:scale-95 active:shadow-lg transition-transform transition-shadow duration-300 ease-out"
               >
                 <img
-                  src="/im/google-play-store-seeklogo.png"
+                  src="/gp.png"
                   alt="Google Play"
                   className="w-full h-12 object-contain"
                 />
@@ -54,10 +54,10 @@ export default function Home() {
 
               <button
                 onClick={() => window.open("https://yesca.in/", "_blank")}
-                className="bg-black rounded-xl shadow-xl p-1 w-44 hover:scale-105 active:scale-95 active:shadow-lg transition-transform transition-shadow duration-300 ease-out"
+                className="bg-[#000000] rounded-xl shadow-xl p-1 w-44 hover:scale-105 active:scale-95 active:shadow-lg transition-transform transition-shadow duration-300 ease-out"
               >
                 <img
-                  src="/im/apple store.png"
+                  src="/apple.png"
                   alt="App Store"
                   className="w-full h-12 object-contain"
                 />
