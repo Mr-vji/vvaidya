@@ -29,14 +29,13 @@ export default function Home() {
 
             {/* Main Heading */}
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-6 text-slate-900">
-              A trusted platform for healthcare staffing, shifts, and
-              professional opportunities
+              On-demand healthcare shifts you can trust.
             </h1>
 
             {/* Subheading */}
             <p className="text-gray-500 text-base md:text-base lg:text-lg max-w-xl mb-8 leading-relaxed">
-              Connecting verified doctors, hospitals, and healthcare
-              institutions — when it matters most.
+              Verified doctors and hospitals connected for as-needed medical
+              coverage.
             </p>
 
             {/* App Store Buttons */}
