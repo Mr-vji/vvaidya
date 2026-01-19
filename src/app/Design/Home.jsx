@@ -101,7 +101,12 @@ export default function Home() {
 
                   <button
                     onClick={() => window.open("/advertise", "_self")}
-                    className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold text-xs mt-3 transition-colors"
+                    className="inline-flex items-center gap-2 
+             text-blue-600 hover:text-blue-700 
+             font-semibold text-xs mt-3 
+             transition-all duration-200 
+             hover:scale-105 
+             cursor-pointer"
                   >
                     Go to advertise page
                     <ArrowRight size={14} />
@@ -121,3 +126,4 @@ export default function Home() {
     </div>
   );
 }
+

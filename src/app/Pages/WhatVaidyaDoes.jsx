@@ -9,11 +9,12 @@ export default function WhatVaidyaDoes() {
         {/* Header Section */}
         <div className="mb-8 md:mb-12">
           <p className="text-orange-600 text-xs md:text-sm font-semibold mb-2 md:mb-3">
-            What Vaidya does
+            What Vaidya Enables{" "}
           </p>
 
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 md:mb-4">
-            Designed for real-world healthcare workflows
+            A focused platform for short-term medical coverage, designed for how
+            healthcare actually works.{" "}
           </h2>
 
           <p className="text-gray-600 text-sm md:text-base max-w-2xl leading-relaxed">
@@ -27,18 +28,18 @@ export default function WhatVaidyaDoes() {
           {/* For Hospitals Card */}
           <div className="bg-gray-50 rounded-lg p-6 md:p-8 border border-gray-200 hover:shadow-sm transition-shadow duration-300">
             <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-4">
-              For Hospitals
+              Hospitals use Vaidya to:{" "}
             </h3>
 
             <div className="space-y-3">
               <p className="text-gray-600 text-sm md:text-base">
-                Urgent & planned doctor requirements
+                Fill urgent and scheduled short-duration doctor shifts{" "}
               </p>
               <p className="text-gray-600 text-sm md:text-base">
-                Shift-based & short-term staffing
+                Ensure coverage through verified, available professionals{" "}
               </p>
               <p className="text-gray-600 text-sm md:text-base">
-                Verified professionals only
+                Manage time-bound needs without long-term commitments{" "}
               </p>
             </div>
           </div>
@@ -46,18 +47,18 @@ export default function WhatVaidyaDoes() {
           {/* For Doctors Card */}
           <div className="bg-gray-50 rounded-lg p-6 md:p-8 border border-gray-200 hover:shadow-sm transition-shadow duration-300">
             <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-4">
-              For Doctors
+              Doctors use Vaidya to:{" "}
             </h3>
 
             <div className="space-y-3">
               <p className="text-gray-600 text-sm md:text-base">
-                Flexible gigs & duties
+                Choose flexible, shift-based medical work{" "}
               </p>
               <p className="text-gray-600 text-sm md:text-base">
-                Transparent shift details
+                See clear expectations, timing, and scope upfront{" "}
               </p>
               <p className="text-gray-600 text-sm md:text-base">
-                Direct hospital access
+                Connect directly with trusted hospitals{" "}
               </p>
             </div>
           </div>

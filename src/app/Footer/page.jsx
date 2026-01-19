@@ -16,17 +16,21 @@ export default function Footer() {
               </h3>
 
               <p className="text-gray-200/90 text-[15px] leading-relaxed mb-2">
-                Privacy & data responsibility upheld for all users.
+                Built with privacy and data responsibility at its core.
+              </p>
+              <p className="text-gray-200/90 text-[15px] leading-relaxed mb-2">
+                All postings are reviewed for relevance, medical
+                appropriateness, and ethical standards.{" "}
               </p>
 
               <p className="text-gray-200/90 text-[15px] leading-relaxed mb-2">
                 Contact: partnerships@vaidya.health
               </p>
 
-              <p className="text-gray-200/90 text-[15px] leading-relaxed mb-6">
+              {/* <p className="text-gray-200/90 text-[15px] leading-relaxed mb-6">
                 All announcements are reviewed for medical compliance and
                 ethical standards.
-              </p>
+              </p> */}
 
               <div className="flex items-center gap-4 mb-4">
                 <a
