@@ -4,7 +4,7 @@ import * as THREE from "three";
 
 export function Vphone(props) {
   const { nodes, materials } = useGLTF("/iphone.glb");
-  const video = useVideoTexture("/textures/screen.mp4");
+  const video = useVideoTexture("/textures/textureV.mp4");
 
   // Fix the flipped orientation
   video.flipY = false;
@@ -317,7 +317,7 @@ export function Vphone(props) {
           castShadow
           receiveShadow
           geometry={nodes.VIDEOTEXTURE.geometry}
-          // material={texturedMaterial}
+          material={texturedMaterial}
           position={[0.018, 0.049, -0.009]}
           rotation={[Math.PI / 2, 0, 0]}
           scale={3.708}
@@ -337,4 +337,4 @@ export function Vphone(props) {
   );
 }
 
-useGLTF.preload("/iphone.glb");
+// useGLTF.preload("/iphone.glb");
