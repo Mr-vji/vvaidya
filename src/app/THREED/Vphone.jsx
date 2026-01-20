@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { useGLTF, useVideoTexture } from "@react-three/drei";
 import * as THREE from "three";
 
-export function Iphone(props) {
+export function Vphone(props) {
   const { nodes, materials } = useGLTF("/iphone.glb");
   const video = useVideoTexture("/textures/screen.mp4");
 
@@ -317,7 +317,7 @@ export function Iphone(props) {
           castShadow
           receiveShadow
           geometry={nodes.VIDEOTEXTURE.geometry}
-          material={texturedMaterial}
+          // material={texturedMaterial}
           position={[0.018, 0.049, -0.009]}
           rotation={[Math.PI / 2, 0, 0]}
           scale={3.708}
