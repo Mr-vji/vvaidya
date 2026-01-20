@@ -78,7 +78,7 @@ import {
   PresentationControls,
 } from "@react-three/drei";
 import { Suspense, useEffect, useState } from "react";
-import { Iphone17 } from "./Iphone17";
+import { Iphone } from "./Iphone";
 import { Html } from "@react-three/drei";
 
 export default function HeroCanvas() {
@@ -130,7 +130,7 @@ export default function HeroCanvas() {
             onPointerOver={() => (document.body.style.cursor = "grab")}
             onPointerOut={() => (document.body.style.cursor = "auto")}
           >
-            <Iphone17 scale={0.45} position={[0, 0.1, 0]} />
+            <Iphone scale={0.45} position={[0, 0.1, 0]} />
           </Float>
         </PresentationControls>
 
