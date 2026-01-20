@@ -104,7 +104,13 @@ export default function HeroCanvas() {
 
   return (
     <Canvas camera={{ position: [-1, 2, 9], fov: 25 }} className="z-50">
-      <Suspense fallback={<Html center>{/* <GlowDot /> */}</Html>}>
+      <Suspense
+        fallback={
+          <Html center>
+            <GlowDot />
+          </Html>
+        }
+      >
         <Environment preset="city" />
         <ambientLight intensity={0.8} />
         <directionalLight intensity={1} position={[2, 2, 2]} />
@@ -124,7 +130,11 @@ export default function HeroCanvas() {
             onPointerOver={() => (document.body.style.cursor = "grab")}
             onPointerOut={() => (document.body.style.cursor = "auto")}
           >
-            <Iphone scale={0.45} position={[0, 0.1, 0]} />
+            {/* <Iphone scale={0.45} position={[0, 0.1, 0]} /> */}
+            <mesh>
+              <boxGeometry args={[1, 2, 0.1]} />
+              <meshStandardMaterial color="lightblue" />
+            </mesh>
           </Float>
         </PresentationControls>
 
