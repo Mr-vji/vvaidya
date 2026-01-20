@@ -75,9 +75,11 @@ import {
   Environment,
   Float,
   OrbitControls,
+  PresentationControls,
 } from "@react-three/drei";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Iphone17 } from "./Iphone17";
+import { Html } from "@react-three/drei";
 
 export default function HeroCanvas() {
   const [isMobile, setIsMobile] = useState(false);
@@ -91,29 +93,54 @@ export default function HeroCanvas() {
     return () => window.removeEventListener("resize", checkScreen);
   }, []);
 
+  function GlowDot() {
+    return (
+      <div className="relative">
+        <div className="w-4 h-4 rounded-full bg-blue-500 animate-ping absolute" />
+        <div className="w-4 h-4 rounded-full bg-blue-600" />
+      </div>
+    );
+  }
+
   return (
-    <Canvas camera={{ position: [-1, 2, 9], fov: 25 }}>
-      <Environment preset="city" />
-
-      <ambientLight intensity={0.8} />
-      <directionalLight intensity={1} position={[2, 2, 2]} />
-
-      <Float
-        speed={1}
-        rotationIntensity={1}
-        floatIntensity={1}
-        onPointerOver={() => (document.body.style.cursor = "grab")}
-        onPointerOut={() => (document.body.style.cursor = "auto")}
+    <Canvas camera={{ position: [-1, 2, 9], fov: 25 }} className="z-50">
+      <Suspense
+        fallback={
+          <Html center>
+            <GlowDot />
+          </Html>
+        }
       >
-        <Iphone17 scale={0.45} position={[0, 0.1, 0]} />
-      </Float>
+        <Environment preset="city" />
+        <ambientLight intensity={0.8} />
+        <directionalLight intensity={1} position={[2, 2, 2]} />
 
-      <ContactShadows
-        position={[0, -1.8, 0]}
-        rotation-x={Math.PI / 2}
-        blur={3}
-        opacity={0.5}
-      />
+        <PresentationControls
+          global={false} // false = only affect this model
+          rotation={[0, 0, 0]} // initial rotation
+          polar={[-Math.PI / 6, Math.PI / 6]} // vertical rotation limit (up/down)
+          azimuth={[-Math.PI / 4, Math.PI / 4]} // horizontal rotation limit (left/right)
+          config={{ mass: 2, tension: 400 }} // feel of the rotation physics
+          snap={true} // snap back to center when released
+        >
+          <Float
+            speed={1}
+            rotationIntensity={1}
+            floatIntensity={1}
+            onPointerOver={() => (document.body.style.cursor = "grab")}
+            onPointerOut={() => (document.body.style.cursor = "auto")}
+          >
+            <Iphone17 scale={0.45} position={[0, 0.1, 0]} />
+          </Float>
+        </PresentationControls>
+
+        <ContactShadows
+          position={[0, -1.8, 0]}
+          rotation-x={Math.PI / 2}
+          blur={3}
+          opacity={0.5}
+        />
+      </Suspense>
     </Canvas>
   );
 }

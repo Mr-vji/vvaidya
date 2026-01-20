@@ -3,7 +3,7 @@ import { useGLTF, useVideoTexture } from "@react-three/drei";
 import * as THREE from "three";
 
 export function Iphone17(props) {
-  const { nodes, materials } = useGLTF("/models/iphone.glb");
+  const { nodes, materials } = useGLTF("/iphone.glb");
   const video = useVideoTexture("/textures/screen.mp4");
 
   // Fix the flipped orientation
@@ -337,4 +337,4 @@ export function Iphone17(props) {
   );
 }
 
-useGLTF.preload("models/IPHONE17.glb");
+useGLTF.preload("/iphone.glb");

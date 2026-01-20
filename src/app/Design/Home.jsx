@@ -28,7 +28,7 @@ export default function Home() {
             </div>
 
             {/* Main Heading */}
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-6 text-slate-900">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-6 text-slate-900">
               On-demand healthcare shifts you can trust.
             </h1>
 
@@ -64,20 +64,25 @@ export default function Home() {
             </div>
 
             {/* Feature Pills */}
-            <div className="flex flex-wrap gap-3 mb-8">
-              <div className="inline-flex items-center gap-2 bg-white px-3 py-2 rounded-full border border-gray-200 shadow-sm">
-                <CheckCircle size={14} className="text-blue-600" />
-                <span className="text-xs text-gray-700">Verified doctors</span>
+            <div className="flex flex-wrap gap-2 sm:gap-3 mb-8">
+              <div className="inline-flex items-center gap-1.5 sm:gap-2 bg-white px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full border border-gray-200 shadow-sm">
+                <CheckCircle
+                  size={14}
+                  className="text-blue-600 flex-shrink-0"
+                />
+                <span className="text-xs text-gray-700 whitespace-nowrap">
+                  Verified doctors
+                </span>
               </div>
-              <div className="inline-flex items-center gap-2 bg-white px-3 py-2 rounded-full border border-gray-200 shadow-sm">
-                <Lock size={14} className="text-blue-600" />
-                <span className="text-xs text-gray-700">
+              <div className="inline-flex items-center gap-1.5 sm:gap-2 bg-white px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full border border-gray-200 shadow-sm">
+                <Lock size={14} className="text-blue-600 flex-shrink-0" />
+                <span className="text-xs text-gray-700 whitespace-nowrap">
                   Secure, healthcare-first
                 </span>
               </div>
-              <div className="inline-flex items-center gap-2 bg-white px-3 py-2 rounded-full border border-gray-200 shadow-sm">
-                <Users size={14} className="text-blue-600" />
-                <span className="text-xs text-gray-700">
+              <div className="inline-flex items-center gap-1.5 sm:gap-2 bg-white px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full border border-gray-200 shadow-sm">
+                <Users size={14} className="text-blue-600 flex-shrink-0" />
+                <span className="text-xs text-gray-700 whitespace-nowrap">
                   Trusted clinical network
                 </span>
               </div>
@@ -126,4 +131,3 @@ export default function Home() {
     </div>
   );
 }
-
