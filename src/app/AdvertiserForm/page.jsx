@@ -237,7 +237,7 @@ export default function AdvertiserForm() {
       } else {
         showNotification(
           "error",
-          "Failed to submit campaign. Please try again."
+          "Failed to submit campaign. Please try again.",
         );
       }
     } catch (err) {
@@ -326,7 +326,7 @@ export default function AdvertiserForm() {
                     onChange={(e) => setCompanyLegalName(e.target.value)}
                     placeholder="e.g. Acme Healthcare Pvt Ltd"
                     className={`w-full pl-10 pr-4 py-3 rounded-lg border focus:ring-2 outline-none text-sm transition-all ${getInputBorderClass(
-                      "companyLegalName"
+                      "companyLegalName",
                     )}`}
                   />
                   <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -343,7 +343,7 @@ export default function AdvertiserForm() {
                   onChange={(e) => setBrandName(e.target.value)}
                   placeholder="e.g. Acme Critical Care"
                   className={`w-full px-4 py-3 rounded-lg border focus:ring-2 outline-none text-sm transition-all ${getInputBorderClass(
-                    "brandName"
+                    "brandName",
                   )}`}
                 />
               </div>
@@ -357,7 +357,7 @@ export default function AdvertiserForm() {
                     value={industry}
                     onChange={(e) => setIndustry(e.target.value)}
                     className={`w-full px-4 py-3 rounded-lg border focus:ring-2 outline-none text-sm appearance-none bg-white transition-all ${getInputBorderClass(
-                      "industry"
+                      "industry",
                     )}`}
                     style={{
                       color: industry ? "#1e293b" : "#64748b",
@@ -391,7 +391,7 @@ export default function AdvertiserForm() {
                     onChange={(e) => setWebsite(e.target.value)}
                     placeholder="e.g. https://www.acme.com"
                     className={`w-full pl-10 pr-4 py-3 rounded-lg border focus:ring-2 outline-none text-sm transition-all ${getInputBorderClass(
-                      "website"
+                      "website",
                     )}`}
                   />
                   <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -409,7 +409,7 @@ export default function AdvertiserForm() {
                     onChange={(e) => setOfficialEmail(e.target.value)}
                     placeholder="marketing@acme.com"
                     className={`w-full pl-10 pr-4 py-3 rounded-lg border focus:ring-2 outline-none text-sm transition-all ${getInputBorderClass(
-                      "officialEmail"
+                      "officialEmail",
                     )}`}
                   />
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -427,7 +427,7 @@ export default function AdvertiserForm() {
                     onChange={(e) => setMobile(e.target.value)}
                     placeholder="98765 43210"
                     className={`w-full pl-10 pr-4 py-3 rounded-lg border focus:ring-2 outline-none text-sm transition-all ${getInputBorderClass(
-                      "mobile"
+                      "mobile",
                     )}`}
                   />
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-400">
@@ -475,7 +475,7 @@ export default function AdvertiserForm() {
                         )}
                         {audience}
                       </button>
-                    )
+                    ),
                   )}
                 </div>
               </div>
@@ -489,7 +489,7 @@ export default function AdvertiserForm() {
                     value={geography}
                     onChange={(e) => setGeography(e.target.value)}
                     className={`w-full pl-10 pr-4 py-3 rounded-lg border focus:ring-2 outline-none text-sm appearance-none bg-white text-slate-600 transition-all ${getInputBorderClass(
-                      "geography"
+                      "geography",
                     )}`}
                   >
                     <option value="">Select State</option>
@@ -513,7 +513,7 @@ export default function AdvertiserForm() {
                       onChange={(e) => setStartDate(e.target.value)}
                       min={getTodayDate()}
                       className={`w-full pl-10 pr-4 py-3 rounded-lg border focus:ring-2 outline-none text-sm transition-all ${getInputBorderClass(
-                        "startDate"
+                        "startDate",
                       )}`}
                     />
                     <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
@@ -530,7 +530,7 @@ export default function AdvertiserForm() {
                       onChange={(e) => setEndDate(e.target.value)}
                       min={startDate || getTodayDate()}
                       className={`w-full pl-10 pr-4 py-3 rounded-lg border focus:ring-2 outline-none text-sm transition-all ${getInputBorderClass(
-                        "endDate"
+                        "endDate",
                       )}`}
                     />
                     <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
@@ -562,7 +562,7 @@ export default function AdvertiserForm() {
                   onChange={(e) => setHeadline(e.target.value)}
                   placeholder="e.g. ICU monitor solutions trusted by 120+ tier-2 hospitals"
                   className={`w-full px-4 py-3 rounded-lg border focus:ring-2 outline-none text-sm transition-all ${getInputBorderClass(
-                    "headline"
+                    "headline",
                   )}`}
                 />
               </div>
@@ -577,7 +577,7 @@ export default function AdvertiserForm() {
                   rows="2"
                   placeholder="Explain the value in simple, factual language."
                   className={`w-full px-4 py-3 rounded-lg border focus:ring-2 outline-none text-sm resize-none transition-all ${getInputBorderClass(
-                    "description"
+                    "description",
                   )}`}
                 ></textarea>
               </div>
@@ -605,8 +605,8 @@ export default function AdvertiserForm() {
                       errorFields.squareImage
                         ? "border-red-500 bg-red-50"
                         : squareImage
-                        ? "border-green-300 bg-green-50"
-                        : "border-slate-300 hover:bg-slate-50"
+                          ? "border-green-300 bg-green-50"
+                          : "border-slate-300 hover:bg-slate-50"
                     }`}
                 >
                   {squareImage ? (

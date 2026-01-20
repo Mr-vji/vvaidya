@@ -1,745 +1,862 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { CheckCircle, Upload, Loader } from "lucide-react";
-import SubmissionNotification from "@/components/SubmissionNotification";
 
-export default function HealthcareAnnouncementForm() {
-  const [formData, setFormData] = useState({
-    organizationName: "",
-    organizationType: "",
-    website: "",
-    contactPerson: "",
-    email: "",
-    phone: "",
-    announcementType: "", 
-    briefDescription: "",
-    urgencyLevel: "",
-    visibility: "",
-    targetAudience: "",
-    preferredPlacement: "",
-    geographicFocus: "",
-    expectedOutcome: "",
+import React, { useState, useRef } from "react";
+import {
+  ChevronLeft,
+  Upload,
+  CheckCircle,
+  AlertCircle,
+} from "lucide-react";
+
+export default function AdvertiserForm() {
+  const [targetAudience, setTargetAudience] = useState(["doctors"]);
+  const [squareImage, setSquareImage] = useState(null);
+  const [landscapeImage, setLandscapeImage] = useState(null);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [industry, setIndustry] = useState("");
+  const [companyLegalName, setCompanyLegalName] = useState("");
+  const [brandName, setBrandName] = useState("");
+  const [website, setWebsite] = useState("");
+  const [officialEmail, setOfficialEmail] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [geography, setGeography] = useState("");
+  const [headline, setHeadline] = useState("");
+  const [description, setDescription] = useState("");
+
+  const [agreedEvidence, setAgreedEvidence] = useState(false);
+  const [agreedPolicy, setAgreedPolicy] = useState(false);
+
+  const [notification, setNotification] = useState({
+    show: false,
+    type: "",
+    message: "",
   });
 
-  const [attachedFile, setAttachedFile] = useState(null);
-  const [compliance, setCompliance] = useState({
-    healthcare: false,
-    medical: false,
-    factual: false,
-    policy: false,
-  });
-
+  const [errorFields, setErrorFields] = useState({});
   const [loading, setLoading] = useState(false);
-  const [showNotification, setShowNotification] = useState(false);
-  const [referenceId, setReferenceId] = useState("");
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
-  useEffect(() => {
-    if (showNotification) {
-      const timer = setTimeout(() => setShowNotification(false), 8000);
-      return () => clearTimeout(timer);
-    }
-  }, [showNotification]);
+  const notificationRef = useRef(null);
+  const squareInputRef = useRef(null);
+  const landscapeInputRef = useRef(null);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files?.[0];
-    if (file && file.size <= 10 * 1024 * 1024) {
-      setAttachedFile(file);
+  const handlePhoneChange = (e) => {
+    const value = e.target.value.replace(/\D/g, "");
+    if (value.length <= 10) {
+      setMobile(value);
     }
   };
 
-  const handleCheckboxChange = (field) => {
-    setCompliance((prev) => ({ ...prev, [field]: !prev[field] }));
+  const handleFileChange = (e, setImage) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    file.preview = URL.createObjectURL(file);
+    setImage(file);
+  };
+
+  const showNotification = (type, message) => {
+    setNotification({
+      show: true,
+      type,
+      message,
+    });
+
+    if (notificationRef.current) {
+      const notif = notificationRef.current;
+
+      notif.style.opacity = "0";
+      notif.style.transform = "scale(0.8) translateY(-30px)";
+
+      setTimeout(() => {
+        notif.style.transition = "all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)";
+        notif.style.opacity = "1";
+        notif.style.transform = "scale(1) translateY(0)";
+      }, 10);
+
+      setTimeout(() => {
+        notif.style.transition = "all 0.4s ease-out";
+        notif.style.opacity = "0";
+        notif.style.transform = "scale(0.8) translateY(-30px)";
+
+        setTimeout(() => {
+          setNotification({
+            show: false,
+            type: "",
+            message: "",
+          });
+        }, 400);
+      }, 4000);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (
-      !compliance.healthcare ||
-      !compliance.medical ||
-      !compliance.factual ||
-      !compliance.policy
-    ) {
-      alert("Please agree to all compliance requirements");
+
+    if (loading) return;
+
+    const newErrorFields = {};
+    let hasErrors = false;
+
+    if (!companyLegalName.trim()) {
+      newErrorFields.companyLegalName = true;
+      hasErrors = true;
+    }
+
+    if (!brandName.trim()) {
+      newErrorFields.brandName = true;
+      hasErrors = true;
+    }
+
+    if (!industry) {
+      newErrorFields.industry = true;
+      hasErrors = true;
+    }
+
+    if (!website.trim()) {
+      newErrorFields.website = true;
+      hasErrors = true;
+    }
+
+    if (!officialEmail.trim()) {
+      newErrorFields.officialEmail = true;
+      hasErrors = true;
+    }
+
+    if (!mobile.trim() || mobile.length !== 10) {
+      newErrorFields.mobile = true;
+      hasErrors = true;
+    }
+
+    if (!geography) {
+      newErrorFields.geography = true;
+      hasErrors = true;
+    }
+
+    if (!startDate) {
+      newErrorFields.startDate = true;
+      hasErrors = true;
+    }
+
+    if (!endDate) {
+      newErrorFields.endDate = true;
+      hasErrors = true;
+    }
+
+    if (!headline.trim()) {
+      newErrorFields.headline = true;
+      hasErrors = true;
+    }
+
+    if (!description.trim()) {
+      newErrorFields.description = true;
+      hasErrors = true;
+    }
+
+    if (!agreedEvidence) {
+      newErrorFields.agreedEvidence = true;
+      hasErrors = true;
+    }
+
+    if (!agreedPolicy) {
+      newErrorFields.agreedPolicy = true;
+      hasErrors = true;
+    }
+
+    if (hasErrors) {
+      setErrorFields(newErrorFields);
+      showNotification("error", "Please fill all required fields");
       return;
     }
 
+    setErrorFields({});
     setLoading(true);
+
+    const formData = new FormData();
+    formData.append("companyLegalName", companyLegalName);
+    formData.append("brandName", brandName);
+    formData.append("industry", industry);
+    formData.append("website", website);
+    formData.append("officialEmail", officialEmail);
+    formData.append("mobile", mobile);
+    formData.append("targetAudience", JSON.stringify(targetAudience));
+    formData.append("geography", geography);
+    formData.append("startDate", startDate);
+    formData.append("endDate", endDate);
+    formData.append("headline", headline);
+    formData.append("description", description);
+
+    if (squareImage) formData.append("squareImage", squareImage);
+    if (landscapeImage) formData.append("landscapeImage", landscapeImage);
+
     try {
-      const submitFormData = new FormData();
-      Object.entries(formData).forEach(([key, value]) =>
-        submitFormData.append(key, value)
-      );
-      submitFormData.append("complianceData", JSON.stringify(compliance));
-      if (attachedFile) submitFormData.append("attachments", attachedFile);
-
-      const response = await fetch("/api/submit-announcement", {
+      const res = await fetch("/api/advertiser", {
         method: "POST",
-        body: submitFormData,
+        body: formData,
       });
-      const data = await response.json();
 
-      if (response.ok) {
-        setReferenceId(
-          `ADV-${new Date().getFullYear()}-${Math.random()
-            .toString(36)
-            .substr(2, 9)
-            .toUpperCase()}`
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        setShowSuccessPopup(true);
+        setCompanyLegalName("");
+        setBrandName("");
+        setIndustry("");
+        setWebsite("");
+        setOfficialEmail("");
+        setMobile("");
+        setGeography("");
+        setHeadline("");
+        setDescription("");
+        setTargetAudience(["doctors"]);
+        setSquareImage(null);
+        setLandscapeImage(null);
+        setStartDate("");
+        setEndDate("");
+        setAgreedEvidence(false);
+        setAgreedPolicy(false);
+        setErrorFields({});
+      } else {
+        showNotification(
+          "error",
+          data.error || "Failed to submit campaign. Please try again.",
         );
-        setShowNotification(true);
-        setTimeout(() => {
-          setFormData({
-            organizationName: "",
-            organizationType: "",
-            website: "",
-            contactPerson: "",
-            email: "",
-            phone: "",
-            announcementType: "",
-            briefDescription: "",
-            urgencyLevel: "",
-            visibility: "",
-            targetAudience: "",
-            preferredPlacement: "",
-            geographicFocus: "",
-            expectedOutcome: "",
-          });
-          setCompliance({
-            healthcare: false,
-            medical: false,
-            factual: false,
-            policy: false,
-          });
-          setAttachedFile(null);
-        }, 3000);
       }
-    } catch (error) {
-      console.error("Submission error:", error.message);
-      // You can create an error notification component similar to SubmissionNotification
+    } catch (err) {
+      console.error(err);
+      showNotification("error", "An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+  const getNotificationIcon = () => {
+    switch (notification.type) {
+      case "success":
+        return <CheckCircle className="w-6 h-6 flex-shrink-0" />;
+      case "error":
+        return <AlertCircle className="w-6 h-6 flex-shrink-0" />;
+      default:
+        return null;
+    }
+  };
+
+  const getInputBorderClass = (fieldName) => {
+    if (errorFields[fieldName]) {
+      return "border-red-500 focus:border-red-500 focus:ring-red-500/20 bg-red-50";
+    }
+    return "border-slate-200 focus:border-indigo-600 focus:ring-indigo-600/20";
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Success Notification */}
-      {showNotification && (
-        <div
-          className="fixed top-0 left-0 right-0 z-50 p-4"
-          style={{ animation: "slideDown 0.5s ease-out" }}
-        >
-          <div className="max-w-2xl mx-auto">
-            <div className="bg-white rounded-xl shadow-2xl border-l-4 border-green-500 p-6">
-              <div className="flex gap-4">
-                <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0 mt-1" />
-                <div className="flex-1">
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">
-                    Submission received
-                  </h3>
-                  <p className="text-gray-700 mb-3 text-sm">
-                    Thank you for submitting your advertisement request. Our
-                    team will now:
-                  </p>
-                  <ul className="space-y-1 mb-4 text-sm text-gray-600">
-                    <li>
-                      • Review your submission for relevance, safety, and
-                      compliance
-                    </li>
-                    <li>• Evaluate audience fit and placement suitability</li>
-                    <li>
-                      • Prepare a custom quote based on reach, duration, and
-                      visibility
-                    </li>
-                  </ul>
-                  <div className="bg-red-50 border border-red-200 rounded p-3 mb-4">
-                    <p className="text-sm text-red-700">
-                      🕐 You will receive a response within 2-3 business days.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-semibold">
-                      Status: Under review
-                    </span>
-                    <span className="text-gray-500 text-xs">
-                      Reference ID: {referenceId}
-                    </span>
-                  </div>
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => (window.location.href = "/")}
-                      className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 font-semibold rounded text-sm"
-                    >
-                      Back to homepage
-                    </button>
-                    <button
-                      onClick={() => setShowNotification(false)}
-                      className="flex-1 px-4 py-2 bg-blue-900 text-white font-semibold rounded text-sm"
-                    >
-                      Submit another
-                    </button>
-                  </div>
-                </div>
-              </div>
+    <div className="min-h-screen bg-white font-sans text-slate-800">
+      {showSuccessPopup && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8">
+            <div className="flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mx-auto mb-6">
+              <CheckCircle className="w-10 h-10 text-green-600" />
             </div>
+            
+            <h2 className="text-2xl font-bold text-slate-900 text-center mb-3">
+              Submission received
+            </h2>
+            
+            <p className="text-slate-600 text-center mb-6">
+              Thank you for submitting your advertisement request. Our team will now:
+            </p>
+            
+            <ul className="space-y-3 mb-6">
+              <li className="flex items-start gap-3 text-sm text-slate-700">
+                <span className="text-slate-400 mt-0.5">•</span>
+                <span>Review your submission for relevance, safety, and compliance</span>
+              </li>
+              <li className="flex items-start gap-3 text-sm text-slate-700">
+                <span className="text-slate-400 mt-0.5">•</span>
+                <span>Evaluate audience fit and placement suitability</span>
+              </li>
+              <li className="flex items-start gap-3 text-sm text-slate-700">
+                <span className="text-slate-400 mt-0.5">•</span>
+                <span>Prepare a custom quote based on reach, duration, and visibility</span>
+              </li>
+            </ul>
+            
+            <div className="bg-blue-50 rounded-lg p-4 mb-6">
+              <p className="text-sm text-blue-800 flex items-start gap-2">
+                <span className="text-lg">💡</span>
+                <span>You will receive a response within 2–3 business days.</span>
+              </p>
+            </div>
+            
+            <div className="flex items-center justify-between mb-6 text-sm">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-yellow-400 rounded-full"></span>
+                <span className="text-slate-600 font-medium">Status: Under review</span>
+              </div>
+              <span className="text-slate-500">Reference ID: ADV-2025-001</span>
+            </div>
+            
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowSuccessPopup(false);
+                  window.open("/", "_self");
+                }}
+                className="flex-1 px-4 py-3 rounded-lg border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 transition-colors"
+              >
+                Back to homepage
+              </button>
+              <button
+                onClick={() => setShowSuccessPopup(false)}
+                className="flex-1 px-4 py-3 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition-colors"
+              >
+                Submit another request
+              </button>
+            </div>
+            
+            <p className="text-xs text-slate-500 text-center mt-6">
+              You can reply to the confirmation email any time if you need to share additional details, updated creatives, or revised timelines.
+            </p>
           </div>
         </div>
       )}
 
-      {/* Main Container */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+      {notification.show && (
+        <div
+          ref={notificationRef}
+          className={`fixed top-6 left-1/2 -translate-x-1/2 z-50 px-6 py-4 rounded-2xl backdrop-blur-2xl border font-medium flex items-center gap-3 max-w-md w-11/12 shadow-2xl ${
+            notification.type === "success"
+              ? "bg-green-500/25 border-green-400/60 text-green-700"
+              : "bg-red-500/25 border-red-400/60 text-red-700"
+          }`}
+          style={{ opacity: 0, transform: "scale(0.8) translateY(-30px)" }}
+        >
+          {getNotificationIcon()}
+          <span className="text-sm sm:text-base font-semibold">
+            {notification.message}
+          </span>
+        </div>
+      )}
+
+      <div className="bg-white border-b border-slate-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-orange-500 rounded flex items-center justify-center text-white font-bold">
-              V
-            </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">
+              <h1 className="text-lg font-bold text-slate-900">
                 Healthcare Announcements (Reviewed)
               </h1>
-              <p className="text-xs text-gray-600">
-                Single form · 3 simple steps · Manually approved for medical
-                relevance
-              </p>
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm">
-            <span className="text-green-600 font-semibold">
-              Steps 1–3 · Details, campaign & compliance
-            </span>
-            <a href="/" className="text-blue-600 hover:underline">
+          <div className="hidden sm:flex items-center gap-4 text-sm">
+            <button
+              onClick={() => window.open("/", "_self")}
+              className="text-slate-600 hover:text-slate-900 transition-transform duration-200 hover:scale-95 cursor-pointer"
+            >
               Back to homepage
-            </a>
+            </button>
           </div>
         </div>
+      </div>
 
-        {/* Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Left Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg p-6 sticky top-4">
-              <p className="text-orange-600 text-sm font-semibold mb-2">
-                Responsible healthcare visibility
-              </p>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                Reach verified doctors & hospitals — not random clicks
-              </h2>
-              <p className="text-gray-700 text-sm mb-4">
-                Advertise inside India's duty-doctor and hospital staffing
-                network. Every announcement is manually reviewed for medical
-                relevance, ethics, and safety.
-              </p>
-
-              <div className="text-gray-600 text-sm space-y-2 mb-6">
-                <p>Doctors and hospital decision-makers only</p>
-                <p>No open ad exchanges or third-party trackers</p>
-                <p>Context-aware, workflow-friendly placements</p>
-              </div>
-
-              <button className="w-full bg-blue-900 text-white font-semibold py-3 px-4 rounded hover:bg-blue-950 transition text-sm mb-8 flex items-center justify-center gap-2">
-                Submit an advertisement request
-                <span>→</span>
-              </button>
-
-              <div className="border-t pt-6 mb-6">
-                <h3 className="font-bold text-gray-900 mb-3 text-sm">
-                  How this works
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <div className="grid lg:grid-cols-12 gap-8">
+          <div className="lg:col-span-4">
+            <div className="rounded-2xl p-6 border border-indigo-100 sticky top-8">
+              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-5 mb-5 border border-white/60 shadow-sm">
+                <h3 className="text-sm font-bold text-indigo-900 mb-3">
+                  Responsible healthcare visibility
                 </h3>
-                <ol className="space-y-2 text-sm text-gray-700">
-                  <li>1. Share advertiser & campaign details</li>
-                  <li>2. Our team verifies compliance & fit</li>
-                  <li>3. We confirm placement, timing & quote</li>
-                </ol>
-              </div>
-
-              <div className="border-t pt-6">
-                <h3 className="font-bold text-gray-900 mb-2 text-sm">
-                  Who typically advertises?
-                </h3>
-                <p className="text-gray-700 text-sm">
-                  Pharma & devices, diagnostics, insurers, medical education
-                  providers, and healthcare platforms seeking ethical
-                  visibility.
+                <h2 className="text-xl font-bold text-slate-900 mb-4 leading-snug">
+                  Reach verified doctors & hospitals — not random clicks
+                </h2>
+                <p className="text-sm text-slate-700 mb-4 leading-relaxed">
+                  Advertise inside India's duty-doctor and hospital staffing
+                  network. Every announcement is manually reviewed for medical
+                  relevance, ethics, and safety.
                 </p>
+                <ul className="space-y-2 text-xs text-slate-600 mb-5">
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-600 mt-0.5">✓</span>
+                    <span>Doctors and hospital decision-makers only</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-600 mt-0.5">✓</span>
+                    <span>No open ad exchanges or third-party resellers</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-600 mt-0.5">✓</span>
+                    <span>Context-aware, workflow-friendly placements</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="space-y-4">
+                <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-white/40">
+                  <h4 className="text-sm font-bold text-slate-900 mb-2">
+                    How this works
+                  </h4>
+                  <p className="text-xs text-slate-600 mb-3">
+                    A simple, three-step review-led process before anything is
+                    shown to healthcare professionals.
+                  </p>
+                  <ol className="text-xs text-slate-600 space-y-1.5">
+                    <li>1. Share advertiser & campaign details</li>
+                    <li>2. Our team verifies compliance & fit</li>
+                    <li>3. We confirm placement, timing & quote</li>
+                  </ol>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Right Form */}
-          <div className="lg:col-span-3">
-            <div className="bg-white rounded-lg p-6 md:p-8">
-              <h2 className="text-lg font-bold text-gray-900 mb-2">
-                Request a Healthcare Announcement
-              </h2>
-              <p className="text-sm text-gray-600 mb-8">
-                Share your organization, campaign details, and compliance
-                confirmations in a single, structured form. Our team will review
-                and respond with availability and pricing.
-              </p>
+          <div className="lg:col-span-8">
+            <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-8">
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-slate-900 mb-2">
+                  Request a Healthcare Announcement
+                </h2>
+                <p className="text-sm text-slate-600">
+                  Share your organization, campaign details, and compliance
+                  confirmations in a single, structured form. Our team will
+                  review and respond with availability and pricing.
+                </p>
+              </div>
 
               <div className="space-y-8">
-                {/* Step 1 */}
-                <div>
-                  <h3 className="text-base font-bold text-blue-700 mb-6">
-                    Step 1 · About your organization
-                  </h3>
-                  <div className="space-y-4">
+                <section>
+                  <div className="mb-6">
+                    <h3 className="text-base font-bold text-slate-900 mb-1">
+                      Step 1 · About your organization
+                    </h3>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-x-6 gap-y-5">
                     <div>
-                      <label className="text-sm font-semibold text-gray-700 block mb-2">
+                      <label className="text-xs font-semibold text-slate-700 block mb-2">
                         Organization / Company name
                       </label>
-                      <p className="text-xs text-gray-500 mb-2">
-                        Hospital, clinic, pharmaceutical company, or healthcare
-                        business name
+                      <p className="text-xs text-slate-500 mb-2">
+                        Hospital, clinic, pharmaceutical company, or healthcare business name
                       </p>
                       <input
                         type="text"
-                        name="organizationName"
-                        value={formData.organizationName}
-                        onChange={handleInputChange}
-                        placeholder="Example: Sunrise Multi-Speciality Hospital, MedCare Pharma Pvt. Ltd."
-                        className="w-full px-4 py-2 text-sm border border-gray-300 rounded bg-blue-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
-                        required
+                        value={companyLegalName}
+                        onChange={(e) => setCompanyLegalName(e.target.value)}
+                        placeholder="Example: Sunrise Multi-Speciality Hospital"
+                        className={`w-full px-3 py-2.5 rounded-md border focus:ring-2 outline-none text-sm transition-all ${getInputBorderClass("companyLegalName")}`}
                       />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-sm font-semibold text-gray-700 block mb-2">
-                          Organization type
-                        </label>
-                        <p className="text-xs text-gray-500 mb-2">
-                          Choose the option that best describes your
-                          organization
-                        </p>
+                    <div>
+                      <label className="text-xs font-semibold text-slate-700 block mb-2">
+                        Organization type
+                      </label>
+                      <p className="text-xs text-slate-500 mb-2">
+                        Choose the option that best describes your organization
+                      </p>
+                      <div className="relative">
                         <select
-                          name="organizationType"
-                          value={formData.organizationType}
-                          onChange={handleInputChange}
-                          className="w-full px-4 py-2 text-sm border border-gray-300 rounded bg-blue-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
-                          required
+                          value={industry}
+                          onChange={(e) => setIndustry(e.target.value)}
+                          className={`w-full px-3 py-2.5 rounded-md border focus:ring-2 outline-none text-sm appearance-none bg-white transition-all ${getInputBorderClass("industry")}`}
+                          style={{ color: industry ? "#1e293b" : "#64748b" }}
                         >
-                          <option value="">
-                            Select · Hospital, clinic, pharma company...
-                          </option>
-                          <option value="hospital">Hospital</option>
-                          <option value="clinic">Clinic</option>
-                          <option value="pharma">Pharma Company</option>
+                          <option value="">Select organization type</option>
+                          <option value="Pharmaceuticals">Pharmaceuticals</option>
+                          <option value="Medical Equipment">Medical Equipment</option>
+                          <option value="Hospital">Hospital</option>
+                          <option value="Clinic">Clinic</option>
+                          <option value="Healthcare Services">Healthcare Services</option>
+                          <option value="Recruiter">Recruiter</option>
                         </select>
-                      </div>
-                      <div>
-                        <label className="text-sm font-semibold text-gray-700 block mb-2">
-                          Official website
-                        </label>
-                        <p className="text-xs text-gray-500 mb-2">
-                          Used for verification
-                        </p>
-                        <input
-                          type="url"
-                          name="website"
-                          value={formData.website}
-                          onChange={handleInputChange}
-                          placeholder="https://your-organization.com"
-                          className="w-full px-4 py-2 text-sm border border-gray-300 rounded bg-blue-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-sm font-semibold text-gray-700 block mb-2">
-                          Contact person name
-                        </label>
-                        <p className="text-xs text-gray-500 mb-2">
-                          Primary point of contact
-                        </p>
-                        <input
-                          type="text"
-                          name="contactPerson"
-                          value={formData.contactPerson}
-                          onChange={handleInputChange}
-                          placeholder="Dr. Ananya Rao · Medical Director / Mr. Rakesh · Marketing Lead"
-                          className="w-full px-4 py-2 text-sm border border-gray-300 rounded bg-blue-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm font-semibold text-gray-700 block mb-2">
-                          Email address
-                        </label>
-                        <p className="text-xs text-gray-500 mb-2">
-                          We'll share review status and quotation here
-                        </p>
-                        <input
-                          type="email"
-                          name="email"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          placeholder="name@your-organization.com"
-                          className="w-full px-4 py-2 text-sm border border-gray-300 rounded bg-blue-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
-                          required
-                        />
+                        <ChevronLeft className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 -rotate-90 pointer-events-none" />
                       </div>
                     </div>
 
                     <div>
-                      <label className="text-sm font-semibold text-gray-700 block mb-2">
+                      <label className="text-xs font-semibold text-slate-700 block mb-2">
+                        Contact person name
+                      </label>
+                      <p className="text-xs text-slate-500 mb-2">
+                        Primary point of contact
+                      </p>
+                      <input
+                        type="text"
+                        value={brandName}
+                        onChange={(e) => setBrandName(e.target.value)}
+                        placeholder="Dr. Ananya Rao - Medical Director"
+                        className={`w-full px-3 py-2.5 rounded-md border focus:ring-2 outline-none text-sm transition-all ${getInputBorderClass("brandName")}`}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold text-slate-700 block mb-2">
+                        Official website
+                      </label>
+                      <p className="text-xs text-slate-500 mb-2">
+                        Used for verification
+                      </p>
+                      <input
+                        type="text"
+                        value={website}
+                        onChange={(e) => setWebsite(e.target.value)}
+                        placeholder="https://your-organization.com"
+                        className={`w-full px-3 py-2.5 rounded-md border focus:ring-2 outline-none text-sm transition-all ${getInputBorderClass("website")}`}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold text-slate-700 block mb-2">
+                        Email address
+                      </label>
+                      <p className="text-xs text-slate-500 mb-2">
+                        We'll share review status and quotation here
+                      </p>
+                      <input
+                        type="email"
+                        value={officialEmail}
+                        onChange={(e) => setOfficialEmail(e.target.value)}
+                        placeholder="name@your-organization.com"
+                        className={`w-full px-3 py-2.5 rounded-md border focus:ring-2 outline-none text-sm transition-all ${getInputBorderClass("officialEmail")}`}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold text-slate-700 block mb-2">
                         Phone number
                       </label>
-                      <p className="text-xs text-gray-500 mb-2">
+                      <p className="text-xs text-slate-500 mb-2">
                         For urgent clarifications, if required
                       </p>
                       <input
                         type="tel"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        placeholder="+91 9XXXXXXXXX"
-                        className="w-full px-4 py-2 text-sm border border-gray-300 rounded bg-blue-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
-                        required
+                        value={mobile}
+                        onChange={handlePhoneChange}
+                        placeholder="9XXXXXXXXX (10 digits)"
+                        maxLength="10"
+                        className={`w-full px-3 py-2.5 rounded-md border focus:ring-2 outline-none text-sm transition-all ${getInputBorderClass("mobile")}`}
                       />
+                      {mobile && mobile.length < 10 && (
+                        <span className="text-xs text-red-500 mt-1 block">
+                          Phone number must be 10 digits
+                        </span>
+                      )}
                     </div>
                   </div>
-                </div>
+                </section>
 
-                {/* Step 2 */}
-                <div className="border-t pt-8">
-                  <h3 className="text-base font-bold text-blue-700 mb-6">
-                    Step 2 · Ad / announcement details
-                  </h3>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-sm font-semibold text-gray-700 block mb-2">
-                          Announcement type
-                        </label>
-                        <p className="text-xs text-gray-500 mb-2">
-                          Select the category that best fits your requirement
-                        </p>
+                <section className="border-t border-slate-200 pt-8">
+                  <div className="mb-6">
+                    <h3 className="text-base font-bold text-slate-900 mb-1">
+                      Step 2 · Ad / announcement details
+                    </h3>
+                  </div>
+
+                  <div className="space-y-5">
+                    <div>
+                      <label className="text-xs font-semibold text-slate-700 block mb-2">
+                        Announcement type
+                      </label>
+                      <p className="text-xs text-slate-500 mb-2">
+                        Select the category that best fits your requirement
+                      </p>
+                      <div className="relative">
                         <select
-                          name="announcementType"
-                          value={formData.announcementType}
-                          onChange={handleInputChange}
-                          className="w-full px-4 py-2 text-sm border border-gray-300 rounded bg-blue-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
-                          required
+                          value={geography}
+                          onChange={(e) => setGeography(e.target.value)}
+                          className={`w-full px-3 py-2.5 rounded-md border focus:ring-2 outline-none text-sm appearance-none bg-white transition-all ${getInputBorderClass("geography")}`}
                         >
-                          <option value="">
-                            Temporary gig, emergency shift, vacancy, service...
-                          </option>
-                          <option value="gig">Temporary gig</option>
-                          <option value="shift">Emergency shift</option>
+                          <option value="">Select announcement type</option>
+                          <option value="Temporary gig">Temporary gig</option>
+                          <option value="Emergency shift">Emergency shift</option>
+                          <option value="Vacancy">Vacancy</option>
+                          <option value="Service">Service</option>
+                          <option value="Pharma awareness">Pharma awareness</option>
+                          <option value="Product awareness">Product awareness</option>
+                          <option value="Training">Training</option>
                         </select>
-                      </div>
-                      <div>
-                        <label className="text-sm font-semibold text-gray-700 block mb-2">
-                          Urgency level
-                        </label>
-                        <p className="text-xs text-gray-500 mb-2">
-                          Helps us prioritise review and placement
-                        </p>
-                        <select
-                          name="urgencyLevel"
-                          value={formData.urgencyLevel}
-                          onChange={handleInputChange}
-                          className="w-full px-4 py-2 text-sm border border-gray-300 rounded bg-blue-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
-                          required
-                        >
-                          <option value="">
-                            Immediate, scheduled, or planned
-                          </option>
-                          <option value="immediate">Immediate</option>
-                          <option value="scheduled">Scheduled</option>
-                        </select>
+                        <ChevronLeft className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 -rotate-90 pointer-events-none" />
                       </div>
                     </div>
 
                     <div>
-                      <label className="text-sm font-semibold text-gray-700 block mb-2">
+                      <label className="text-xs font-semibold text-slate-700 block mb-2">
                         Brief description
                       </label>
-                      <p className="text-xs text-gray-500 mb-2">
-                        Include who it is for, locations, timelines, and any key
-                        eligibility details
+                      <p className="text-xs text-slate-500 mb-2">
+                        Include who it is for, locations, timelines, and any key eligibility details
                       </p>
                       <textarea
-                        name="briefDescription"
-                        value={formData.briefDescription}
-                        onChange={handleInputChange}
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        rows="3"
                         placeholder="Clearly explain the requirement, role, service, or product context you want to announce."
-                        rows={2}
-                        className="w-full px-4 py-2 text-sm border border-gray-300 rounded bg-blue-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none resize-none"
-                        required
-                      />
+                        className={`w-full px-3 py-2.5 rounded-md border focus:ring-2 outline-none text-sm resize-none transition-all ${getInputBorderClass("description")}`}
+                      ></textarea>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid md:grid-cols-3 gap-6">
                       <div>
-                        <label className="text-sm font-semibold text-gray-700 block mb-2">
+                        <label className="text-xs font-semibold text-slate-700 block mb-2">
+                          Urgency level
+                        </label>
+                        <p className="text-xs text-slate-500 mb-2">
+                          Helps us prioritize review and placement
+                        </p>
+                        <div className="relative">
+                          <select
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                            className={`w-full px-3 py-2.5 rounded-md border focus:ring-2 outline-none text-sm appearance-none bg-white transition-all ${getInputBorderClass("startDate")}`}
+                          >
+                            <option value="">Select urgency</option>
+                            <option value="Immediate">Immediate</option>
+                            <option value="Scheduled">Scheduled</option>
+                            <option value="Planned">Planned</option>
+                          </select>
+                          <ChevronLeft className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 -rotate-90 pointer-events-none" />
+                        </div>
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <label className="text-xs font-semibold text-slate-700 block mb-2">
                           Preferred visibility duration
                         </label>
-                        <p className="text-xs text-gray-500 mb-2">
+                        <p className="text-xs text-slate-500 mb-2">
                           How long should this announcement be active?
                         </p>
-                        <select
-                          name="visibility"
-                          value={formData.visibility}
-                          onChange={handleInputChange}
-                          className="w-full px-4 py-2 text-sm border border-gray-300 rounded bg-blue-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
-                          required
-                        >
-                          <option value="">
-                            Example: 7 days, 14 days, 30 days
-                          </option>
-                          <option value="7">7 days</option>
-                          <option value="15">15 days</option>
-                          <option value="30">30 days</option>
-                        </select>
+                        <input
+                          type="text"
+                          value={endDate}
+                          onChange={(e) => setEndDate(e.target.value)}
+                          placeholder="Example: 7 days, 14 days, 30 days"
+                          className={`w-full px-3 py-2.5 rounded-md border focus:ring-2 outline-none text-sm transition-all ${getInputBorderClass("endDate")}`}
+                        />
                       </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-6">
                       <div>
-                        <label className="text-sm font-semibold text-gray-700 block mb-2">
+                        <label className="text-xs font-semibold text-slate-700 block mb-2">
                           Target audience
                         </label>
-                        <p className="text-xs text-gray-500 mb-2">
-                          Specific specialties or general healthcare
-                          professionals
+                        <p className="text-xs text-slate-500 mb-2">
+                          Specific specialties or general healthcare professionals
                         </p>
                         <input
                           type="text"
-                          name="targetAudience"
-                          value={formData.targetAudience}
-                          onChange={handleInputChange}
-                          placeholder="Example: ICU specialists in Hyderabad, all doctors..."
-                          className="w-full px-4 py-2 text-sm border border-gray-300 rounded bg-blue-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
-                          required
+                          value={headline}
+                          onChange={(e) => setHeadline(e.target.value)}
+                          placeholder="Example: ICU specialists in Hyderabad"
+                          className={`w-full px-3 py-2.5 rounded-md border focus:ring-2 outline-none text-sm transition-all ${getInputBorderClass("headline")}`}
                         />
                       </div>
-                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="text-sm font-semibold text-gray-700 block mb-2">
+                        <label className="text-xs font-semibold text-slate-700 block mb-2">
                           Attachments (optional)
                         </label>
-                        <p className="text-xs text-gray-500 mb-2">
+                        <p className="text-xs text-slate-500 mb-2">
                           Helps speed up compliance and review
                         </p>
-                        <label className="border-2 border-dashed border-blue-300 rounded p-4 text-center hover:border-blue-500 transition cursor-pointer bg-blue-50">
-                          <Upload className="mx-auto text-blue-600 mb-1 w-5 h-5" />
-                          <p className="text-xs font-medium text-gray-700">
-                            Click to upload
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            PDF, DOC up to 10MB
-                          </p>
-                          {attachedFile && (
-                            <p className="text-xs text-blue-600 font-semibold mt-1">
-                              ✓ {attachedFile.name}
-                            </p>
-                          )}
-                          <input
-                            type="file"
-                            onChange={handleFileChange}
-                            accept=".pdf,.doc,.docx"
-                            className="hidden"
-                          />
-                        </label>
-                      </div>
-                      <div>
-                        <label className="text-sm font-semibold text-gray-700 block mb-2">
-                          Upload supporting documents
-                        </label>
-                        <p className="text-xs text-gray-500 mb-2">
-                          creatives, or approvals (if any)
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Step 3 */}
-                <div className="border-t pt-8">
-                  <h3 className="text-base font-bold text-blue-700 mb-6">
-                    Step 3 · Campaign preferences & compliance
-                  </h3>
-
-                  <div className="space-y-4 mb-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-sm font-semibold text-gray-700 block mb-2">
-                          Preferred placement
-                        </label>
-                        <p className="text-xs text-gray-500 mb-2">
-                          Final placement will be confirmed after review
-                        </p>
-                        <select
-                          name="preferredPlacement"
-                          value={formData.preferredPlacement}
-                          onChange={handleInputChange}
-                          className="w-full px-4 py-2 text-sm border border-gray-300 rounded bg-blue-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
-                          required
-                        >
-                          <option value="">
-                            Feed announcement, featured banner...
-                          </option>
-                          <option value="feed">Feed announcement</option>
-                          <option value="banner">Featured banner</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="text-sm font-semibold text-gray-700 block mb-2">
-                          Geographic focus
-                        </label>
-                        <p className="text-xs text-gray-500 mb-2">
-                          Pan-India, state, or city / region
-                        </p>
                         <input
-                          type="text"
-                          name="geographicFocus"
-                          value={formData.geographicFocus}
-                          onChange={handleInputChange}
-                          placeholder="Example: Pan-India, Karnataka, Hyderabad..."
-                          className="w-full px-4 py-2 text-sm border border-gray-300 rounded bg-blue-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
-                          required
+                          type="file"
+                          ref={landscapeInputRef}
+                          accept="image/*,.pdf,.doc,.docx"
+                          className="hidden"
+                          onChange={(e) => handleFileChange(e, setLandscapeImage)}
                         />
+                        <div
+                          onClick={() => landscapeInputRef.current?.click()}
+                          className={`relative border border-dashed rounded-md p-3 cursor-pointer transition-all hover:bg-slate-50 ${
+                            landscapeImage ? "border-green-300 bg-green-50" : "border-slate-300"
+                          }`}
+                        >
+                          {landscapeImage ? (
+                            <div className="flex items-center gap-2">
+                              <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                              <span className="text-xs text-green-700 font-medium truncate">
+                                {landscapeImage.name}
+                              </span>
+                              <span className="text-[10px] text-slate-500 ml-auto">
+                                Click to change
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <Upload className="w-4 h-4 text-slate-400" />
+                              <span className="text-xs text-slate-500">
+                                Upload documents or creatives
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
+                  </div>
+                </section>
 
-                    <div>
-                      <label className="text-sm font-semibold text-gray-700 block mb-2">
-                        Expected outcome
-                      </label>
-                      <p className="text-xs text-gray-500 mb-2">
-                        What would you like this campaign to achieve?
-                      </p>
-                      <input
-                        type="text"
-                        name="expectedOutcome"
-                        value={formData.expectedOutcome}
-                        onChange={handleInputChange}
-                        placeholder="Awareness, engagement, educational reach, lead generation..."
-                        className="w-full px-4 py-2 text-sm border border-gray-300 rounded bg-blue-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
-                        required
-                      />
-                    </div>
+                <section className="border-t border-slate-200 pt-8">
+                  <div className="mb-6">
+                    <h3 className="text-base font-bold text-slate-900 mb-1">
+                      Step 3 · Campaign preferences & compliance
+                    </h3>
                   </div>
 
-                  <div className="border-t pt-6">
-                    <h4 className="text-sm font-bold text-gray-900 mb-3">
-                      Compliance & declarations
-                    </h4>
-                    <p className="text-xs text-gray-600 mb-4">
-                      All checkboxes must be true before submission
-                    </p>
+                  <div className="space-y-5">
+                    <div>
+                      <label className="text-xs font-semibold text-slate-700 block mb-2">
+                        Compliance & declarations
+                      </label>
+                      <p className="text-xs text-slate-500 mb-3">
+                        All checkboxes must be true before submission
+                      </p>
 
-                    <div className="space-y-3 mb-6">
-                      {[
-                        {
-                          key: "healthcare",
-                          label:
-                            "I confirm this promotion is healthcare-related and ethically compliant.",
-                        },
-                        {
-                          key: "medical",
-                          label:
-                            "The content does not violate medical advertising regulations.",
-                        },
-                        {
-                          key: "factual",
-                          label:
-                            "All claims in this announcement are factual and verifiable.",
-                        },
-                        {
-                          key: "policy",
-                          label:
-                            "I agree to Vaidya 247's ad review and approval process.",
-                        },
-                      ].map((item) => (
+                      <div className="space-y-3">
                         <label
-                          key={item.key}
-                          className={`flex items-start gap-3 p-3 rounded border text-sm cursor-pointer ${
-                            compliance[item.key]
-                              ? "bg-blue-50 border-blue-500"
-                              : "border-gray-300 hover:bg-blue-50"
+                          className={`flex gap-3 cursor-pointer group items-start p-3 rounded-lg transition-all border ${
+                            errorFields.agreedEvidence
+                              ? "bg-red-50 border-red-200"
+                              : "border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/30"
                           }`}
                         >
                           <input
                             type="checkbox"
-                            checked={compliance[item.key]}
-                            onChange={() => handleCheckboxChange(item.key)}
-                            className="mt-0.5 w-4 h-4"
+                            checked={agreedEvidence}
+                            onChange={(e) => setAgreedEvidence(e.target.checked)}
+                            className="w-4 h-4 mt-0.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600"
                           />
-                          <span className="text-gray-700">{item.label}</span>
+                          <span
+                            className={`text-xs leading-relaxed ${
+                              errorFields.agreedEvidence
+                                ? "text-red-700 font-semibold"
+                                : "text-slate-600"
+                            }`}
+                          >
+                            I confirm this promotion is healthcare-related and ethically compliant.
+                          </span>
                         </label>
-                      ))}
+
+                        <label
+                          className={`flex gap-3 cursor-pointer group items-start p-3 rounded-lg transition-all border ${
+                            errorFields.agreedPolicy
+                              ? "bg-red-50 border-red-200"
+                              : "border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/30"
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={agreedPolicy}
+                            onChange={(e) => setAgreedPolicy(e.target.checked)}
+                            className="w-4 h-4 mt-0.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600"
+                          />
+                          <span
+                            className={`text-xs leading-relaxed ${
+                              errorFields.agreedPolicy
+                                ? "text-red-700 font-semibold"
+                                : "text-slate-600"
+                            }`}
+                          >
+                            The content does not violate medical advertising regulations.
+                          </span>
+                        </label>
+
+                        <label className="flex gap-3 cursor-pointer group items-start p-3 rounded-lg transition-all border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/30">
+                          <input
+                            type="checkbox"
+                            className="w-4 h-4 mt-0.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600"
+                          />
+                          <span className="text-xs leading-relaxed text-slate-600">
+                            All claims in this announcement are factual and verifiable.
+                          </span>
+                        </label>
+
+                        <label className="flex gap-3 cursor-pointer group items-start p-3 rounded-lg transition-all border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/30">
+                          <input
+                            type="checkbox"
+                            className="w-4 h-4 mt-0.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600"
+                          />
+                          <span className="text-xs leading-relaxed text-slate-600">
+                            I agree to Vaidya 247's ad review and approval process.
+                          </span>
+                        </label>
+                      </div>
                     </div>
 
-                    <p className="text-xs text-gray-600 mb-6 bg-blue-50 border border-blue-200 rounded p-3">
-                      ⚠️ Vaidya 247 may modify, reject, or discontinue any
-                      announcement to protect platform trust and community
-                      well-being.
-                    </p>
+                    <div className="bg-blue-50 rounded-lg p-4 border border-blue-100 mt-4">
+                      <p className="text-xs text-blue-800 leading-relaxed">
+                        <span className="font-bold">Note:</span> Vaidya 247 may
+                        modify, reject, or discontinue any announcement to
+                        protect platform trust and community well-being.
+                      </p>
+                    </div>
+                  </div>
+                </section>
 
-                    <p className="text-xs text-gray-600 mb-6">
-                      Need to check a previous request?{" "}
-                      <span className="text-blue-700 font-semibold cursor-pointer hover:underline">
+                <section className="border-t border-slate-200 pt-6">
+                  <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 mb-6">
+                    <p className="text-xs text-slate-600 leading-relaxed mb-2">
+                      <span className="font-bold">
+                        Need to check a previous request?
+                      </span>{" "}
+                      <a
+                        href="#"
+                        className="text-indigo-600 hover:text-indigo-700 font-semibold underline"
+                      >
                         View submission status
-                      </span>
+                      </a>
                     </p>
-
-                    <p className="text-xs text-gray-600 mb-6">
+                    <p className="text-[11px] text-slate-500">
                       Submissions are typically reviewed within one business
                       day. Promotional, misleading, or non-compliant content
                       will not be approved.
                     </p>
+                  </div>
 
+                  <div className="pt-2">
                     <button
                       onClick={handleSubmit}
-                      disabled={
-                        loading ||
-                        !compliance.healthcare ||
-                        !compliance.medical ||
-                        !compliance.factual ||
-                        !compliance.policy
-                      }
-                      className="w-full bg-blue-900 hover:bg-blue-950 disabled:bg-gray-400 text-white font-semibold py-3 rounded transition flex items-center justify-center gap-2"
+                      disabled={loading || !agreedEvidence || !agreedPolicy}
+                      className={`w-full font-bold text-sm py-3.5 rounded-lg transition-all flex items-center justify-center gap-2 shadow-md ${
+                        loading || !agreedEvidence || !agreedPolicy
+                          ? "bg-slate-300 text-slate-500 cursor-not-allowed"
+                          : "bg-indigo-600 text-white hover:bg-indigo-700 active:scale-[0.98]"
+                      }`}
                     >
                       {loading ? (
                         <>
-                          <Loader size={18} className="animate-spin" />
-                          Submitting...
+                          <svg
+                            className="animate-spin w-5 h-5"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            />
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                            />
+                          </svg>
+                          <span>Submitting...</span>
                         </>
                       ) : (
-                        <>
-                          <CheckCircle size={18} />
-                          Submit for review
-                        </>
+                        "Submit for review"
                       )}
                     </button>
                   </div>
-                </div>
+                </section>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes slideDown {
-          from {
-            opacity: 0;
-            transform: translateY(-30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </div>
   );
 }
